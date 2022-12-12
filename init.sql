@@ -26,10 +26,10 @@ create table yachts
 )
 go
 
-drop table if exists clients
+drop table if exists accounts
 go
 
-create table clients
+create table accounts
 (
     [id] int primary key identity(1, 1),
     [name] varchar(255) not null,
@@ -52,6 +52,6 @@ create table reservations
     [created_at] datetime not null default current_timestamp,
     [updated_at] datetime,
     [yacht_id] int foreign key references yachts([id]),
-    [client_id] int foreign key references clients([id]),
+    [account_id] int foreign key references account([id]),
 )
 go
