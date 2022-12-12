@@ -1,9 +1,11 @@
 package yachts
 
-import "time"
+import (
+	"time"
+)
 
 type Account struct {
-	Key     string    `json:"key" gorm:"primaryKey"`
+	Key     string    `json:"key"`
 	Name    string    `json:"name"`
 	Surname string    `json:"surname"`
 	Created time.Time `json:"created"`
@@ -11,7 +13,7 @@ type Account struct {
 }
 
 type Yacht struct {
-	Key         string    `json:"key" gorm:"primaryKey"`
+	Key         string    `json:"key"`
 	Name        string    `json:"name"`
 	Type        string    `json:"type"`
 	Price       float32   `json:"price"`
@@ -22,12 +24,12 @@ type Yacht struct {
 }
 
 type Reservation struct {
-	Key        string    `json:"key" gorm:"primaryKey"`
+	Key        string    `json:"key"`
 	From       time.Time `json:"from"`
 	To         time.Time `json:"to"`
 	Remarks    string    `json:"remarks"`
-	AccountKey string    `json:"accountKey"`
-	YachtKey   string    `json:"yachtKey"`
+	AccountKey uint      `json:"accountKey"`
+	YachtKey   uint      `json:"yachtKey"`
 	Created    time.Time `json:"created"`
 	Updated    time.Time `json:"updated"`
 }
