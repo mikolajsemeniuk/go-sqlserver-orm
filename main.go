@@ -1,12 +1,15 @@
 package main
 
 import (
-	"database/sql"
 	"log"
+	"server/sailing"
 
-	_ "github.com/denisenkom/go-mssqldb"
+	// _ "github.com/denisenkom/go-mssqldb"
+	"github.com/gofiber/fiber/v2"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/kelseyhightower/envconfig"
+	"gorm.io/driver/sqlserver"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -18,12 +21,24 @@ func main() {
 		log.Fatal(err)
 	}
 
-	storage, err := sql.Open("sqlserver", "server=localhost;user id=sa;password=P@ssw0rd;port=1433")
+	dsn := "sqlserver://sa:P%40ssw0rd@localhost:1433?database=yachts"
+	storage, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if _, err := storage.Exec("create database yachts"); err != nil {
+	app := fiber.New()
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
+	})
+
+	app.Get("/sign-up", sailing.SignUp(storage.Where, storage.Create))
+	app.Get("/sign-in", sailing.SignIn(storage.Where))
+	app.Get("/sign-out", sailing.SignOut())
+	app.Get("/authorize", sailing.Authorize())
+
+	if err := app.Listen(":3000"); err != nil {
 		log.Fatal(err)
 	}
 }
