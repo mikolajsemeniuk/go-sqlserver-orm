@@ -6,14 +6,14 @@ import (
 	"net/mail"
 )
 
-type SignUpRequest struct {
-	Email    string `json:"email"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
+type RegisterRequest struct {
+	Email    string `json:"email" example:"mike@mock.com"`
+	Name     string `json:"name" example:"mike"`
+	Password string `json:"password" example:"P@ssw0rd"`
 }
 
-func (r *SignUpRequest) UnmarshalJSON(data []byte) error {
-	type Input SignUpRequest
+func (r *RegisterRequest) UnmarshalJSON(data []byte) error {
+	type Input RegisterRequest
 	var input Input
 
 	if err := json.Unmarshal(data, &input); err != nil {
@@ -32,17 +32,17 @@ func (r *SignUpRequest) UnmarshalJSON(data []byte) error {
 		return errors.New("password has to be in range of 2 to 255")
 	}
 
-	*r = SignUpRequest(input)
+	*r = RegisterRequest(input)
 	return nil
 }
 
-type SignInRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+type LoginRequest struct {
+	Email    string `json:"email" example:"mike@mock.com"`
+	Password string `json:"password" example:"P@ssw0rd"`
 }
 
-func (r *SignInRequest) UnmarshalJSON(data []byte) error {
-	type Input SignInRequest
+func (r *LoginRequest) UnmarshalJSON(data []byte) error {
+	type Input LoginRequest
 	var input Input
 
 	if err := json.Unmarshal(data, &input); err != nil {
@@ -57,6 +57,6 @@ func (r *SignInRequest) UnmarshalJSON(data []byte) error {
 		return errors.New("password has to be in range of 2 to 255")
 	}
 
-	*r = SignInRequest(input)
+	*r = LoginRequest(input)
 	return nil
 }

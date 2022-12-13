@@ -19,17 +19,20 @@ type Reader func(query interface{}, args ...interface{}) (tx *gorm.DB)
 
 type Writer func(value interface{}) (tx *gorm.DB)
 
-// SignIn
-//
-// SignUp is used for:
-//   - validating data
-//   - checking if user with given email exists and if yes return error
-//   - generating password hash
-//   - write user to database
-//   - creating token
-func SignUp(r Reader, w Writer) func(c *fiber.Ctx) error {
+// @Summary Register
+// @Schemes
+// @Description Register new account
+// @Tags account
+// @Accept application/json
+// @Param payload body RegisterRequest true "body"
+// @Success 200 {object} Account
+// @Success 400
+// @Failure 500
+// @Failure 503
+// @Router /account/register [post]
+func Register(r Reader, w Writer) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		var request SignUpRequest
+		var request RegisterRequest
 
 		if err := json.Unmarshal(c.Body(), &request); err != nil {
 			return fiber.NewError(fiber.StatusBadRequest, err.Error())
@@ -37,7 +40,7 @@ func SignUp(r Reader, w Writer) func(c *fiber.Ctx) error {
 
 		result := r("email = ?", request.Email).Find(&Account{})
 		if result.Error != nil {
-			return fiber.NewError(fiber.StatusBadRequest, result.Error.Error())
+			return fiber.NewError(fiber.StatusServiceUnavailable, result.Error.Error())
 		}
 
 		if result.RowsAffected != 0 {
@@ -46,20 +49,21 @@ func SignUp(r Reader, w Writer) func(c *fiber.Ctx) error {
 
 		password, err := bcrypt.GenerateFromPassword([]byte(request.Password), 14)
 		if err != nil {
-			return err
+			return fiber.NewError(fiber.StatusBadRequest, err.Error())
 		}
 
-		entity := Account{
+		account := Account{
 			Name:     request.Name,
 			Email:    request.Email,
 			Password: password,
 			Created:  time.Now(),
 		}
-		if w(&entity).Error != nil {
-			return fiber.NewError(fiber.StatusBadRequest, result.Error.Error())
+
+		if w(&account).Error != nil {
+			return fiber.NewError(fiber.StatusServiceUnavailable, result.Error.Error())
 		}
 
-		claims := jwt.MapClaims{"Issuer": entity.ID, "ExpiresAt": time.Now().Add(time.Hour).Unix()}
+		claims := jwt.MapClaims{"Issuer": account.ID, "ExpiresAt": time.Now().Add(time.Hour).Unix()}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		value, err := token.SignedString([]byte(secret))
 		if err != nil {
@@ -75,13 +79,25 @@ func SignUp(r Reader, w Writer) func(c *fiber.Ctx) error {
 			Expires:  time.Now().Add(time.Duration(1) * time.Hour),
 		})
 
-		return c.SendString("SignUp")
+		response, _ := json.Marshal(account)
+		return c.Send(response)
 	}
 }
 
-func SignIn(r Reader) func(c *fiber.Ctx) error {
+// @Summary Login
+// @Schemes
+// @Description Login existing user
+// @Tags account
+// @Accept application/json
+// @Param payload body LoginRequest true "body"
+// @Success 200 {object} Account
+// @Success 400
+// @Failure 500
+// @Failure 503
+// @Router /account/login [post]
+func Login(r Reader) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		var request SignInRequest
+		var request LoginRequest
 
 		if err := json.Unmarshal(c.Body(), &request); err != nil {
 			return fiber.NewError(fiber.StatusBadRequest, err.Error())
@@ -117,7 +133,8 @@ func SignIn(r Reader) func(c *fiber.Ctx) error {
 			Expires:  time.Now().Add(time.Duration(1) * time.Hour),
 		})
 
-		return c.SendString("SignIn")
+		response, _ := json.Marshal(account)
+		return c.Send(response)
 	}
 }
 
@@ -128,7 +145,7 @@ func SignIn(r Reader) func(c *fiber.Ctx) error {
 // @Accept application/json
 // @Success 200 {object} string
 // @Router /account/logout [get]
-func SignOut() func(c *fiber.Ctx) error {
+func Logout() func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		c.Cookie(&fiber.Cookie{
 			Name:     cookie,
@@ -138,13 +155,13 @@ func SignOut() func(c *fiber.Ctx) error {
 			SameSite: "none",
 			Expires:  time.Now().Add(-time.Second),
 		})
-		return c.SendString("user logout")
+		return c.Send([]byte(`{ }`))
 	}
 }
 
 // @Summary Authorize
 // @Schemes
-// @Description Authorize existing user
+// @Description Authorize account
 // @Tags account
 // @Accept application/json
 // @Success 200 {object} string
@@ -164,6 +181,6 @@ func Authorize() func(c *fiber.Ctx) error {
 
 		id := payload["Issuer"].(float64)
 
-		return c.SendString(fmt.Sprintf("user with id: %d", int(id)))
+		return c.Send([]byte(fmt.Sprintf(`{ "id": "%f" }`, id)))
 	}
 }

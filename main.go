@@ -4,14 +4,22 @@ import (
 	"log"
 	"server/sailing"
 
-	// _ "github.com/denisenkom/go-mssqldb"
+	_ "server/docs"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/swagger"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/kelseyhightower/envconfig"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 )
 
+// @title           API
+// @version         1.0
+// @description     some API
+// @BasePath /
+// @schemes http https
 func main() {
 	var config struct {
 		// put your env variable here
@@ -27,18 +35,24 @@ func main() {
 		log.Fatal(err)
 	}
 
-	app := fiber.New()
+	router := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     "*",
+		AllowHeaders:     "Origin, Content-Type, Accept, Content-Length, Accept-Language, Accept-Encoding, Connection, Access-Control-Allow-Origin",
+		AllowCredentials: true,
+		AllowMethods:     "GET, POST, HEAD, PUT, DELETE, PATCH, OPTIONS",
+	}))
 
-	app.Get("/sign-up", sailing.SignUp(storage.Where, storage.Create))
-	app.Get("/sign-in", sailing.SignIn(storage.Where))
-	app.Get("/sign-out", sailing.SignOut())
-	app.Get("/authorize", sailing.Authorize())
+	router.Post("/account/register", sailing.Register(storage.Where, storage.Create))
+	router.Post("/account/login", sailing.Login(storage.Where))
+	router.Get("/account/logout", sailing.Logout())
+	router.Get("/account/authorize", sailing.Authorize())
 
-	if err := app.Listen(":3000"); err != nil {
+	router.Get("/swagger/*", swagger.HandlerDefault)
+	router.Use(func(c *fiber.Ctx) error { return c.Status(fiber.StatusNotFound).Redirect("/swagger/index.html") })
+
+	if err := router.Listen(":5000"); err != nil {
 		log.Fatal(err)
 	}
 }
