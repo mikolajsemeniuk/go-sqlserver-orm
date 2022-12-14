@@ -1,5 +1,42 @@
 basePath: /
 definitions:
+  admin.CreateYachtRequest:
+    properties:
+      description:
+        example: your favorite yacht
+        type: string
+      image:
+        example: https://images.pexels.com/photos/843633/pexels-photo-843633.jpeg?auto=compress&cs=tinysrgb&w=1200
+        type: string
+      name:
+        example: Maxus
+        type: string
+      price:
+        example: 100
+        type: number
+      type:
+        example: yacht
+        type: string
+    type: object
+  admin.Yacht:
+    properties:
+      created:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      type:
+        type: string
+      updated:
+        type: string
+    type: object
   sailing.Account:
     properties:
       created:
@@ -14,6 +51,8 @@ definitions:
         items:
           type: integer
         type: array
+      role:
+        type: string
       updated:
         type: string
     type: object
@@ -44,23 +83,6 @@ info:
   title: API
   version: "1.0"
 paths:
-  /account/authorize:
-    get:
-      consumes:
-      - application/json
-      description: Authorize account
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-        "401":
-          description: Unauthorized
-          schema:
-            type: string
-      summary: Authorize
-      tags:
-      - account
   /account/login:
     post:
       consumes:
@@ -126,6 +148,78 @@ paths:
       summary: Register
       tags:
       - account
+  /admin/create:
+    post:
+      consumes:
+      - application/json
+      description: Create new yacht
+      parameters:
+      - description: body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/admin.CreateYachtRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/admin.Yacht'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      summary: Create
+      tags:
+      - admin
+  /admin/list:
+    get:
+      consumes:
+      - application/json
+      description: Create new yacht
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/admin.Yacht'
+            type: array
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      summary: Create
+      tags:
+      - admin
+  /admin/remove/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove yacht
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      summary: Remove
+      tags:
+      - admin
 schemes:
 - http
 - https

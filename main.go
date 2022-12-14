@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"server/sailing"
+	"server/sailing/admin"
+	"server/sailing/security"
 
 	_ "server/docs"
 
@@ -47,7 +49,9 @@ func main() {
 	router.Post("/account/register", sailing.Register(storage.Where, storage.Create))
 	router.Post("/account/login", sailing.Login(storage.Where))
 	router.Get("/account/logout", sailing.Logout())
-	router.Get("/account/authorize", sailing.Authorize())
+	router.Get("/account/authorize", security.Authorize("admin"))
+
+	admin.Route(router, storage)
 
 	router.Get("/swagger/*", swagger.HandlerDefault)
 	router.Use(func(c *fiber.Ctx) error { return c.Status(fiber.StatusNotFound).Redirect("/swagger/index.html") })

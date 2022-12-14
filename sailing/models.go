@@ -7,6 +7,7 @@ type Account struct {
 	Email    string     `json:"email"`
 	Name     string     `json:"name"`
 	Password []byte     `json:"password"`
+	Role     string     `json:"role"`
 	Created  time.Time  `json:"created"`
 	Updated  *time.Time `json:"updated"`
 }

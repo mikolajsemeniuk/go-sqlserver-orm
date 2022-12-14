@@ -2,7 +2,6 @@ package sailing
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -56,6 +55,7 @@ func Register(r Reader, w Writer) func(c *fiber.Ctx) error {
 			Name:     request.Name,
 			Email:    request.Email,
 			Password: password,
+			Role:     "user",
 			Created:  time.Now(),
 		}
 
@@ -63,7 +63,7 @@ func Register(r Reader, w Writer) func(c *fiber.Ctx) error {
 			return fiber.NewError(fiber.StatusServiceUnavailable, result.Error.Error())
 		}
 
-		claims := jwt.MapClaims{"Issuer": account.ID, "ExpiresAt": time.Now().Add(time.Hour).Unix()}
+		claims := jwt.MapClaims{"Issuer": account.ID, "Role": account.Role, "ExpiresAt": time.Now().Add(time.Hour).Unix()}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		value, err := token.SignedString([]byte(secret))
 		if err != nil {
@@ -117,7 +117,7 @@ func Login(r Reader) func(c *fiber.Ctx) error {
 			return fiber.NewError(http.StatusBadRequest, "incorrect password")
 		}
 
-		claims := jwt.MapClaims{"Issuer": account.ID, "ExpiresAt": time.Now().Add(time.Hour).Unix()}
+		claims := jwt.MapClaims{"Issuer": account.ID, "Role": account.Role, "ExpiresAt": time.Now().Add(time.Hour).Unix()}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		value, err := token.SignedString([]byte(secret))
 		if err != nil {
@@ -156,31 +156,5 @@ func Logout() func(c *fiber.Ctx) error {
 			Expires:  time.Now().Add(-time.Second),
 		})
 		return c.Send([]byte(`{ }`))
-	}
-}
-
-// @Summary Authorize
-// @Schemes
-// @Description Authorize account
-// @Tags account
-// @Accept application/json
-// @Success 200 {object} string
-// @Success 401 {object} string
-// @Router /account/authorize [get]
-func Authorize() func(c *fiber.Ctx) error {
-	return func(c *fiber.Ctx) error {
-		cookie := c.Cookies(cookie)
-		parser := func(token *jwt.Token) (interface{}, error) { return []byte(secret), nil }
-
-		token, err := jwt.Parse(cookie, parser)
-		if err != nil {
-			return fiber.NewError(http.StatusUnauthorized, "unauthorized")
-		}
-
-		payload := token.Claims.(jwt.MapClaims)
-
-		id := payload["Issuer"].(float64)
-
-		return c.Send([]byte(fmt.Sprintf(`{ "id": "%f" }`, id)))
 	}
 }

@@ -16,32 +16,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/account/authorize": {
-            "get": {
-                "description": "Authorize account",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "account"
-                ],
-                "summary": "Authorize",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/account/login": {
             "post": {
                 "description": "Login existing user",
@@ -141,9 +115,173 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/admin/create": {
+            "post": {
+                "description": "Create new yacht",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Create",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.CreateYachtRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/admin.Yacht"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
+        },
+        "/admin/list": {
+            "get": {
+                "description": "Create new yacht",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Create",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/admin.Yacht"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
+        },
+        "/admin/remove/{id}": {
+            "delete": {
+                "description": "Remove yacht",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Remove",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "admin.CreateYachtRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "example": "your favorite yacht"
+                },
+                "image": {
+                    "type": "string",
+                    "example": "https://images.pexels.com/photos/843633/pexels-photo-843633.jpeg?auto=compress\u0026cs=tinysrgb\u0026w=1200"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Maxus"
+                },
+                "price": {
+                    "type": "number",
+                    "example": 100
+                },
+                "type": {
+                    "type": "string",
+                    "example": "yacht"
+                }
+            }
+        },
+        "admin.Yacht": {
+            "type": "object",
+            "properties": {
+                "created": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updated": {
+                    "type": "string"
+                }
+            }
+        },
         "sailing.Account": {
             "type": "object",
             "properties": {
@@ -164,6 +302,9 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "role": {
+                    "type": "string"
                 },
                 "updated": {
                     "type": "string"

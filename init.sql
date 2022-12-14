@@ -22,6 +22,7 @@ create table accounts
     [email] varchar(255) not null,
     [name] varchar(255) not null,
     [password] binary(64) not null,
+    [role] varchar(10) not null check ([role] IN('user', 'admin')),
     [created] datetime not null default current_timestamp,
     [updated] datetime,
 )
