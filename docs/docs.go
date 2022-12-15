@@ -118,7 +118,7 @@ const docTemplate = `{
         },
         "/admin/create": {
             "post": {
-                "description": "Create new yacht",
+                "description": "Create yacht",
                 "consumes": [
                     "application/json"
                 ],
@@ -158,7 +158,7 @@ const docTemplate = `{
         },
         "/admin/list": {
             "get": {
-                "description": "Create new yacht",
+                "description": "List yachts",
                 "consumes": [
                     "application/json"
                 ],
@@ -225,6 +225,84 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/admin/yacht/update": {
+            "patch": {
+                "description": "Update yacht",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Update",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.UpdateYachtRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/admin.Yacht"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
+        },
+        "/admin/yacht/{id}": {
+            "get": {
+                "description": "Find yacht",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Find",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/admin.Yacht"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -250,6 +328,29 @@ const docTemplate = `{
                 "type": {
                     "type": "string",
                     "example": "yacht"
+                }
+            }
+        },
+        "admin.UpdateYachtRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "type": {
+                    "type": "string"
                 }
             }
         },

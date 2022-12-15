@@ -17,21 +17,21 @@ func Authorize(role string) func(c *fiber.Ctx) error {
 
 		token, err := jwt.Parse(cookie, parser)
 		if err != nil {
-			return fiber.NewError(http.StatusUnauthorized, "unauthorized")
+			return fiber.NewError(http.StatusUnauthorized, `{ "message": "unauthorized" }`)
 		}
 
 		payload, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
-			return fiber.NewError(http.StatusUnauthorized, "invalid claims")
+			return fiber.NewError(http.StatusUnauthorized, `{ "message": "invalid claims" }`)
 		}
 
 		actual, ok := payload["Role"].(string)
 		if !ok {
-			return fiber.NewError(http.StatusUnauthorized, "missing role")
+			return fiber.NewError(http.StatusUnauthorized, `{ "message": "missing role" }`)
 		}
 
 		if role != actual {
-			return fiber.NewError(http.StatusForbidden, "unauthenticated")
+			return fiber.NewError(http.StatusForbidden, `{ "message": "unauthenticated" }`)
 		}
 
 		return c.Next()
