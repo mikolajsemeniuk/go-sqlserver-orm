@@ -299,6 +299,78 @@
                     }
                 }
             }
+        },
+        "/reservations": {
+            "post": {
+                "description": "Create reservation",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reservations"
+                ],
+                "summary": "Create",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/reservations.Request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/reservations.Reservation"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
+        },
+        "/yachts": {
+            "get": {
+                "description": "List yachts",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "yachts"
+                ],
+                "summary": "List",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/yachts.Yacht"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -379,6 +451,56 @@
                 }
             }
         },
+        "reservations.Request": {
+            "type": "object",
+            "properties": {
+                "from": {
+                    "type": "string",
+                    "example": "2022-12-16T21:00:00.511Z"
+                },
+                "remarks": {
+                    "type": "string",
+                    "example": "please clean it"
+                },
+                "to": {
+                    "type": "string",
+                    "example": "2022-12-17T21:00:00.511Z"
+                },
+                "yachtID": {
+                    "type": "integer",
+                    "example": 4
+                }
+            }
+        },
+        "reservations.Reservation": {
+            "type": "object",
+            "properties": {
+                "account_id": {
+                    "type": "integer"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "remarks": {
+                    "type": "string"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "updated": {
+                    "type": "string"
+                },
+                "yacht_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "sailing.Account": {
             "type": "object",
             "properties": {
@@ -435,6 +557,35 @@
                 "password": {
                     "type": "string",
                     "example": "P@ssw0rd"
+                }
+            }
+        },
+        "yachts.Yacht": {
+            "type": "object",
+            "properties": {
+                "created": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updated": {
+                    "type": "string"
                 }
             }
         }

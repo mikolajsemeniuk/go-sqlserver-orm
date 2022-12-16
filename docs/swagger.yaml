@@ -52,6 +52,40 @@ definitions:
       updated:
         type: string
     type: object
+  reservations.Request:
+    properties:
+      from:
+        example: "2022-12-16T21:00:00.511Z"
+        type: string
+      remarks:
+        example: please clean it
+        type: string
+      to:
+        example: "2022-12-17T21:00:00.511Z"
+        type: string
+      yachtID:
+        example: 4
+        type: integer
+    type: object
+  reservations.Reservation:
+    properties:
+      account_id:
+        type: integer
+      created:
+        type: string
+      from:
+        type: string
+      id:
+        type: integer
+      remarks:
+        type: string
+      to:
+        type: string
+      updated:
+        type: string
+      yacht_id:
+        type: integer
+    type: object
   sailing.Account:
     properties:
       created:
@@ -90,6 +124,25 @@ definitions:
         type: string
       password:
         example: P@ssw0rd
+        type: string
+    type: object
+  yachts.Yacht:
+    properties:
+      created:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      type:
+        type: string
+      updated:
         type: string
     type: object
 info:
@@ -286,6 +339,53 @@ paths:
       summary: Update
       tags:
       - admin
+  /reservations:
+    post:
+      consumes:
+      - application/json
+      description: Create reservation
+      parameters:
+      - description: body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/reservations.Request'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservations.Reservation'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      summary: Create
+      tags:
+      - reservations
+  /yachts:
+    get:
+      consumes:
+      - application/json
+      description: List yachts
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/yachts.Yacht'
+            type: array
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      summary: List
+      tags:
+      - yachts
 schemes:
 - http
 - https

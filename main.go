@@ -4,7 +4,9 @@ import (
 	"log"
 	"server/sailing"
 	"server/sailing/admin"
+	"server/sailing/reservations"
 	"server/sailing/security"
+	"server/sailing/yachts"
 
 	_ "server/docs"
 
@@ -52,6 +54,8 @@ func main() {
 	router.Get("/account/authorize", security.Authorize("admin"))
 
 	admin.Route(router, storage)
+	yachts.Route(router, storage)
+	reservations.Route(router, storage)
 
 	router.Get("/swagger/*", swagger.HandlerDefault)
 	router.Use(func(c *fiber.Ctx) error { return c.Status(fiber.StatusNotFound).Redirect("/swagger/index.html") })

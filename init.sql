@@ -53,8 +53,8 @@ create table reservations
     [from] datetime not null,
     [to] datetime not null,
     [remarks] varchar(255) not null,
-    [created_at] datetime not null default current_timestamp,
-    [updated_at] datetime,
+    [created] datetime not null default current_timestamp,
+    [updated] datetime,
     [yacht_id] int foreign key references yachts([id]),
     [account_id] int foreign key references accounts([id]),
 )

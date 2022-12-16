@@ -10,6 +10,9 @@ import (
 var secret = "some secret"
 var cookie = "cookie-name"
 
+const ID = "id"
+const Role = "role"
+
 func Authorize(role string) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		cookie := c.Cookies(cookie)
@@ -34,6 +37,7 @@ func Authorize(role string) func(c *fiber.Ctx) error {
 			return fiber.NewError(http.StatusForbidden, `{ "message": "unauthenticated" }`)
 		}
 
+		c.Locals("id", payload["Issuer"])
 		return c.Next()
 	}
 }
