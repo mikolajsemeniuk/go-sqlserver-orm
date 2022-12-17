@@ -40,8 +40,12 @@ func Create(s *gorm.DB, create Writer) func(c *fiber.Ctx) error {
 			return fiber.NewError(fiber.StatusBadRequest, err.Error())
 		}
 
+		if request.From == request.To {
+			return fiber.NewError(fiber.StatusBadRequest, "from and to cannot be at the same day")
+		}
+
 		if request.From.After(request.To) {
-			return fiber.NewError(fiber.StatusBadRequest, `{ "message": "from cannot be after to" }`)
+			return fiber.NewError(fiber.StatusBadRequest, "from cannot be after to")
 		}
 
 		var reservation Reservation
@@ -52,7 +56,7 @@ func Create(s *gorm.DB, create Writer) func(c *fiber.Ctx) error {
 		}
 
 		if result.RowsAffected != 0 {
-			return fiber.NewError(fiber.StatusBadRequest, `{ "message": "reservation is already done in this date, select other time" }`)
+			return fiber.NewError(fiber.StatusBadRequest, "reservation is already done in this date, select other time")
 		}
 
 		reservation.From = request.From

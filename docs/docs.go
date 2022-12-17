@@ -375,6 +375,44 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/yachts/{id}": {
+            "get": {
+                "description": "Find yacht",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "yachts"
+                ],
+                "summary": "Find",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/yachts.Yacht"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
         }
     },
     "definitions": {
